@@ -10,23 +10,23 @@ using DT102G_moment3._2.Models;
 
 namespace DT102G_moment3._2.Controllers
 {
-    public class CdsController : Controller
+    public class LoansController : Controller
     {
         private readonly MusicContext _context;
 
-        public CdsController(MusicContext context)
+        public LoansController(MusicContext context)
         {
             _context = context;
         }
 
-        // GET: Cds
+        // GET: Loans
         public async Task<IActionResult> Index()
         {
-            var musicContext = _context.Cd.Include(c => c.Artist);
+            var musicContext = _context.Loan.Include(l => l.Cd);
             return View(await musicContext.ToListAsync());
         }
 
-        // GET: Cds/Details/5
+        // GET: Loans/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -34,40 +34,42 @@ namespace DT102G_moment3._2.Controllers
                 return NotFound();
             }
 
-            var cd = await _context.Cd
-                .Include(c => c.Artist)
-                .FirstOrDefaultAsync(m => m.CdId == id);
-            if (cd == null)
+            var loan = await _context.Loan
+                .Include(l => l.Cd)
+                .FirstOrDefaultAsync(m => m.LoanId == id);
+            if (loan == null)
             {
                 return NotFound();
             }
 
-            return View(cd);
+            return View(loan);
         }
 
-        // GET: Cds/Create
+        // GET: Loans/Create
         public IActionResult Create()
         {
-            ViewData["ArtistId"] = new SelectList(_context.Artist, "ArtistId", "ArtistId");
+            ViewData["CdId"] = new SelectList(_context.Cd, "CdId", "CdId");
             return View();
         }
 
-        // POST: Cds/Create
+        // POST: Loans/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CdId,Title,Loan,ArtistId")] Cd cd)
+        public async Task<IActionResult> Create([Bind("LoanId,Borrower,LoanDate,CdId")] Loan loan)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(cd);
+                _context.Add(loan);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ArtistId"] = new SelectList(_context.Artist, "ArtistId", "Name", cd.ArtistId);
-            return View(cd);
+            ViewData["CdId"] = new SelectList(_context.Cd, "CdId", "CdId", loan.CdId);
+            return View(loan);
         }
 
-        // GET: Cds/Edit/5
+        // GET: Loans/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -75,21 +77,23 @@ namespace DT102G_moment3._2.Controllers
                 return NotFound();
             }
 
-            var cd = await _context.Cd.FindAsync(id);
-            if (cd == null)
+            var loan = await _context.Loan.FindAsync(id);
+            if (loan == null)
             {
                 return NotFound();
             }
-            ViewData["ArtistId"] = new SelectList(_context.Artist, "ArtistId", "ArtistId", cd.ArtistId);
-            return View(cd);
+            ViewData["CdId"] = new SelectList(_context.Cd, "CdId", "CdId", loan.CdId);
+            return View(loan);
         }
 
-        // POST: Cds/Edit/5
+        // POST: Loans/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CdId,Title,Loan,ArtistId")] Cd cd)
+        public async Task<IActionResult> Edit(int id, [Bind("LoanId,Borrower,LoanDate,CdId")] Loan loan)
         {
-            if (id != cd.CdId)
+            if (id != loan.LoanId)
             {
                 return NotFound();
             }
@@ -98,12 +102,12 @@ namespace DT102G_moment3._2.Controllers
             {
                 try
                 {
-                    _context.Update(cd);
+                    _context.Update(loan);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CdExists(cd.CdId))
+                    if (!LoanExists(loan.LoanId))
                     {
                         return NotFound();
                     }
@@ -114,11 +118,11 @@ namespace DT102G_moment3._2.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ArtistId"] = new SelectList(_context.Artist, "ArtistId", "ArtistId", cd.ArtistId);
-            return View(cd);
+            ViewData["CdId"] = new SelectList(_context.Cd, "CdId", "CdId", loan.CdId);
+            return View(loan);
         }
 
-        // GET: Cds/Delete/5
+        // GET: Loans/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -126,31 +130,31 @@ namespace DT102G_moment3._2.Controllers
                 return NotFound();
             }
 
-            var cd = await _context.Cd
-                .Include(c => c.Artist)
-                .FirstOrDefaultAsync(m => m.CdId == id);
-            if (cd == null)
+            var loan = await _context.Loan
+                .Include(l => l.Cd)
+                .FirstOrDefaultAsync(m => m.LoanId == id);
+            if (loan == null)
             {
                 return NotFound();
             }
 
-            return View(cd);
+            return View(loan);
         }
 
-        // POST: Cds/Delete/5
+        // POST: Loans/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var cd = await _context.Cd.FindAsync(id);
-            _context.Cd.Remove(cd);
+            var loan = await _context.Loan.FindAsync(id);
+            _context.Loan.Remove(loan);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CdExists(int id)
+        private bool LoanExists(int id)
         {
-            return _context.Cd.Any(e => e.CdId == id);
+            return _context.Loan.Any(e => e.LoanId == id);
         }
     }
 }

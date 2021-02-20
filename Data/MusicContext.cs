@@ -17,5 +17,6 @@ namespace DT102G_moment3._2.Data
         //propertys
         public DbSet<Artist> Artist { get; set; }
         public DbSet<Cd> Cd { get; set; }
+        public DbSet<Loan> Loan { get; set; }
     }
 }
