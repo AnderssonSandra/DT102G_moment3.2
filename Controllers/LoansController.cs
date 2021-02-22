@@ -48,19 +48,23 @@ namespace DT102G_moment3._2.Controllers
         // GET: Loans/Create
         public IActionResult Create()
         {
-            ViewData["CdId"] = new SelectList(_context.Cd, "CdId", "CdId");
+            ViewData["CdId"] = new SelectList(_context.Cd.Where(c => c.Loan == false), "CdId", "Title");
             return View();
         }
 
         // POST: Loans/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("LoanId,Borrower,LoanDate,CdId")] Loan loan)
         {
             if (ModelState.IsValid)
             {
+                //change value to true
+                var cdId = loan.CdId;
+                var item = _context.Cd.Where(c => c.CdId == cdId).FirstOrDefault();
+                item.Loan = true;
+
+                //add changes to database
                 _context.Add(loan);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -87,8 +91,6 @@ namespace DT102G_moment3._2.Controllers
         }
 
         // POST: Loans/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("LoanId,Borrower,LoanDate,CdId")] Loan loan)
@@ -145,8 +147,16 @@ namespace DT102G_moment3._2.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
-        {
+        {       
+            //get loan on id
             var loan = await _context.Loan.FindAsync(id);
+
+            //change value to false
+            var cdId = loan.CdId;
+            var item = _context.Cd.Where(c => c.CdId == cdId).FirstOrDefault();
+            item.Loan = false;
+
+            //delete loan
             _context.Loan.Remove(loan);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

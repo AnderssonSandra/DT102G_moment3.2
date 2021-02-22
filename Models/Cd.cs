@@ -9,13 +9,14 @@ using System.ComponentModel;
 
 namespace DT102G_moment3._2.Models
 {
+    [DisplayName("Album")]
     public class Cd
     {
 
-        [DisplayName("CD skriva")]
+        [DisplayName("Album")]
         public int CdId { get; set; }
         [DisplayName("Album")]
-        [Required]
+        [Required(ErrorMessage = "Du måste ange namnet på albumet")]
         public string Title { get; set; }
 
         [DisplayName("Den är utlånad")]

@@ -50,7 +50,7 @@ namespace DT102G_moment3._2
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Artists}/{action=Index}/{id?}");
             });
         }
 

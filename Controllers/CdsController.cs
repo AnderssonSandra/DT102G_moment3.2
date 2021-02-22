@@ -20,8 +20,23 @@ namespace DT102G_moment3._2.Controllers
         }
 
         // GET: Cds
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
+
+            //get search result
+            if(!String.IsNullOrEmpty(searchString))
+            {
+                //get music
+                var music = from m in _context.Cd select m;
+
+                //filter music on search string
+                music = music.Where(s => s.Title.ToLower().Contains(searchString.ToLower())).Include(c => c.Artist);
+
+                //return view
+                return View(await music.ToListAsync());
+            }
+
+            //Get all records with belonging artist
             var musicContext = _context.Cd.Include(c => c.Artist);
             return View(await musicContext.ToListAsync());
         }
@@ -48,8 +63,8 @@ namespace DT102G_moment3._2.Controllers
         // GET: Cds/Create
         public IActionResult Create()
         {
-            ViewData["ArtistId"] = new SelectList(_context.Artist, "ArtistId", "ArtistId");
-            return View();
+            ViewData["Name"] = new SelectList(_context.Artist, "ArtistId", "Name");
+            return View(); 
         }
 
         // POST: Cds/Create
@@ -80,7 +95,8 @@ namespace DT102G_moment3._2.Controllers
             {
                 return NotFound();
             }
-            ViewData["ArtistId"] = new SelectList(_context.Artist, "ArtistId", "ArtistId", cd.ArtistId);
+            ViewData["Name"] = new SelectList(_context.Artist, "ArtistId", "Name", cd.ArtistId);
+
             return View(cd);
         }
 

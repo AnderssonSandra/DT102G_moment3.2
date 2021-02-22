@@ -11,7 +11,7 @@ namespace DT102G_moment3._2.Models
     public class Artist
     {
         public int ArtistId { get; set; }
-        [Required]
+        [Required(ErrorMessage ="Du måste ange namnet på artisten")]
         [DisplayName("Artist")]
         public string Name { get; set; }
 
